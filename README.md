@@ -1,6 +1,16 @@
-# Nerfies
+# Agentic Real2Sim Website
 
-This is the repository that contains source code for the [Nerfies website](https://nerfies.github.io).
+This is the repository for the website showcasing **Agentic Real2Sim** by UBC
+PhysAI Lab. It is forked from the [Nerfies website](https://nerfies.github.io)
+template.
+
+Preview locally with:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open `http://localhost:8000/`.
 
 If you find Nerfies useful for your work please cite:
 ```

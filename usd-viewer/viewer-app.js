@@ -14,6 +14,8 @@ import {
   NeutralToneMapping,
   NoToneMapping,
   DirectionalLight,
+  HemisphereLight,
+  PCFShadowMap,
   CubeUVReflectionMapping,
   PMREMGenerator,
   EquirectangularReflectionMapping,
@@ -675,6 +677,7 @@ let nativeGltfRoot = null;
 let nativeGltfMixers = [];
 let fileLinkLoadRunning = false;
 let pendingFileLinkRequest = null;
+let presentationKeyLight = null;
 
 // Lowercase file extension from a name or URL, with any query/hash stripped.
 // Used only for analytics — extensions are not sensitive (unlike names/paths).
@@ -827,9 +830,105 @@ function lightingConfig() {
     exposure: typeof c.exposure === "number" ? c.exposure : 1,
     toneMapping: c.toneMapping || "agx",
     background: c.background ?? null,
+    authoredLightIntensityScale: typeof c.authoredLightIntensityScale === "number"
+      ? c.authoredLightIntensityScale
+      : 0.01,
+    ground: c.ground || {},
     ambient: c.ambient || {},
+    fillLight: c.fillLight || {},
     keyLight: c.keyLight || {},
+    shadow: c.shadow || {},
   };
+}
+
+function presentationGround(root) {
+  const cfg = lightingConfig().ground;
+  if (!cfg.enabled || !cfg.name) return null;
+  const ground = root.getObjectByName(cfg.name);
+  return ground?.geometry ? ground : null;
+}
+
+function resizePresentationGround(ground) {
+  const cfg = lightingConfig().ground;
+  const geometry = ground?.geometry;
+  if (!geometry || geometry.userData.usdViewerPresentationScaled) return;
+
+  geometry.computeBoundingBox();
+  const size = new Vector3();
+  geometry.boundingBox.getSize(size);
+  const authoredSpan = Math.max(size.x, size.y);
+  if (!(authoredSpan > 0) || !(cfg.size > 0)) return;
+
+  const scale = cfg.size / authoredSpan;
+  geometry.scale(scale, scale, 1);
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  geometry.userData.usdViewerPresentationScaled = true;
+  geometry.userData.usdViewerPresentationAuthoredSpan = authoredSpan;
+}
+
+function applyPresentationGroundMaterial(ground) {
+  if (!ground) return;
+  const cfg = lightingConfig().ground;
+  const materials = Array.isArray(ground.material) ? ground.material : [ground.material];
+  for (const material of materials) {
+    if (!material) continue;
+    material.color?.set(cfg.color);
+    material.metalness = cfg.metalness;
+    material.roughness = cfg.roughness;
+    material.envMapIntensity = cfg.envMapIntensity;
+    material.needsUpdate = true;
+  }
+}
+
+function nonGroundSceneBounds(root, ground) {
+  const bounds = new Box3();
+  const objectBounds = new Box3();
+  bounds.makeEmpty();
+  root.updateWorldMatrix(true, true);
+  root.traverse(object => {
+    if (object === ground || !object.isMesh || !object.geometry) return;
+    object.geometry.computeBoundingBox();
+    if (!object.geometry.boundingBox?.isEmpty()) {
+      objectBounds.copy(object.geometry.boundingBox).applyMatrix4(object.matrixWorld);
+      bounds.union(objectBounds);
+    }
+  });
+  return bounds;
+}
+
+function updatePresentationKeyTarget(root, ground) {
+  if (!presentationKeyLight) return;
+  const bounds = nonGroundSceneBounds(root, ground);
+  if (bounds.isEmpty()) return;
+
+  const center = new Vector3();
+  bounds.getCenter(center);
+  const direction = lightingConfig().keyLight.direction;
+  const offset = Array.isArray(direction) ? direction : [5, 10, 7.5];
+  presentationKeyLight.target.position.copy(center);
+  presentationKeyLight.position.copy(center).add(new Vector3(
+    Number(offset[0]) || 0,
+    Number(offset[1]) || 0,
+    Number(offset[2]) || 0,
+  ));
+  presentationKeyLight.target.updateMatrixWorld();
+  presentationKeyLight.updateMatrixWorld();
+}
+
+function applyGroundPresentation(root) {
+  const ground = presentationGround(root);
+  if (!ground) return null;
+
+  resizePresentationGround(ground);
+  applyPresentationGroundMaterial(ground);
+  root.traverse(object => {
+    if (!object.isMesh) return;
+    object.castShadow = object !== ground;
+    object.receiveShadow = true;
+  });
+  updatePresentationKeyTarget(root, ground);
+  return ground;
 }
 
 function resolveToneMapping(name) {
@@ -1820,6 +1919,7 @@ async function loadUsdFile(directory, filename, path, isRootFile = true, filesFo
 
   let handle = null;
   let needleContext = null;
+  let materialsReadyPromise = null;
   try {
     if (viewerMode === VIEWER_MODE_NEEDLE_LOADER) {
       const result = await loadNeedleEngineFile(filename, path, filesForHydra, generation);
@@ -1835,6 +1935,7 @@ async function loadUsdFile(directory, filename, path, isRootFile = true, filesFo
         autoPlay: true,
         waitForMaterials,
         complexity,
+        scenePrimitiveLightIntensityScale: lightingConfig().authoredLightIntensityScale,
       });
 
       if (generation !== loadGeneration) {
@@ -1843,11 +1944,7 @@ async function loadUsdFile(directory, filename, path, isRootFile = true, filesFo
       }
 
       await handle.ready();
-      if (!waitForMaterials) {
-        void handle.materialsReady?.().catch(err => {
-          console.warn("Three.js USD materials finished with errors", err);
-        });
-      }
+      materialsReadyPromise = handle.materialsReady?.();
     }
 
     if (generation !== loadGeneration) {
@@ -1874,7 +1971,16 @@ async function loadUsdFile(directory, filename, path, isRootFile = true, filesFo
     }
 
     if (viewerMode === VIEWER_MODE_THREE) {
+      applyGroundPresentation(window.usdRoot);
       fitCameraToSelection(window.camera, window._controls, [window.usdRoot]);
+      if (materialsReadyPromise && typeof materialsReadyPromise.then === "function") {
+        void materialsReadyPromise.then(() => {
+          if (generation !== loadGeneration || currentHydraHandle !== handle) return;
+          applyPresentationGroundMaterial(presentationGround(window.usdRoot));
+        }).catch(err => {
+          console.warn("Three.js USD materials finished with errors", err);
+        });
+      }
     }
     if (!diagnosticsMode()) {
       console.log("Loading done. Scene: ", window.usdRoot);
@@ -2088,7 +2194,7 @@ async function init() {
   scene.add(usdRoot);
 
   // Optional direct lights layered on top of the environment lighting, driven by
-  // viewer-config.js (window.USD_VIEWER_LIGHTING). Both are off by default.
+  // viewer-config.js (window.USD_VIEWER_LIGHTING).
   {
     const lc = lightingConfig();
     if (lc.ambient?.enabled) {
@@ -2099,6 +2205,15 @@ async function init() {
       ambient.name = "Config Ambient Light";
       scene.add(ambient);
     }
+    if (lc.fillLight?.enabled) {
+      const fill = new HemisphereLight(
+        new Color(lc.fillLight.skyColor || "#d7e7ff"),
+        new Color(lc.fillLight.groundColor || "#101827"),
+        typeof lc.fillLight.intensity === "number" ? lc.fillLight.intensity : 0.35
+      );
+      fill.name = "Config Fill Light";
+      scene.add(fill);
+    }
     if (lc.keyLight?.enabled) {
       const key = new DirectionalLight(
         new Color(lc.keyLight.color || "#ffffff"),
@@ -2107,7 +2222,29 @@ async function init() {
       const dir = Array.isArray(lc.keyLight.direction) ? lc.keyLight.direction : [5, 10, 7.5];
       key.position.set(dir[0] || 0, dir[1] || 0, dir[2] || 0);
       key.name = "Config Key Light";
-      scene.add(key);
+      key.target.name = "Config Key Light Target";
+      key.castShadow = lc.keyLight.castShadow === true;
+      if (key.castShadow) {
+        const shadow = lc.shadow;
+        const mobile = window.matchMedia("(max-width: 767px)").matches;
+        const mapSize = mobile && typeof shadow.mobileMapSize === "number"
+          ? shadow.mobileMapSize
+          : shadow.mapSize;
+        const cameraSize = typeof shadow.cameraSize === "number" ? shadow.cameraSize : 1.25;
+        key.shadow.mapSize.set(mapSize || 1024, mapSize || 1024);
+        key.shadow.camera.left = -cameraSize;
+        key.shadow.camera.right = cameraSize;
+        key.shadow.camera.top = cameraSize;
+        key.shadow.camera.bottom = -cameraSize;
+        key.shadow.camera.near = typeof shadow.near === "number" ? shadow.near : 0.1;
+        key.shadow.camera.far = typeof shadow.far === "number" ? shadow.far : 12;
+        key.shadow.bias = typeof shadow.bias === "number" ? shadow.bias : -0.00035;
+        key.shadow.normalBias = typeof shadow.normalBias === "number" ? shadow.normalBias : 0.012;
+        key.shadow.radius = typeof shadow.radius === "number" ? shadow.radius : 4;
+        key.shadow.camera.updateProjectionMatrix();
+      }
+      presentationKeyLight = key;
+      scene.add(key, key.target);
     }
   }
 
@@ -2131,7 +2268,8 @@ async function init() {
   renderer.setSize( window.innerWidth, window.innerHeight );
   renderer.outputColorSpace = SRGBColorSpace;
   applyAgXToneMapping(renderer);
-  renderer.shadowMap.enabled = false;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = PCFShadowMap;
   renderer.setClearColor( 0x000000, 0 ); // the default
 
   const envMapPromise = loadThreeEnvironment(scene, renderer, selectedEnvironment);

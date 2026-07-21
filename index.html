@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="Agentic Real2Sim converts real-world robot interaction recordings into executable simulator twins.">
-  <meta name="keywords" content="Agentic Real2Sim, Real2Sim, robotics, simulation, vision-language agents">
+        content="Agentic Real2Sim converts DROID robot manipulation episodes into MuJoCo-simulated episodic twins.">
+  <meta name="keywords" content="Agentic Real2Sim, real-to-sim, DROID, MuJoCo, simulatable episodic twins, vision-language agents">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agentic Real2Sim: Generalized Physical World Modeling with Vision-Language Agents</title>
+  <title>Agentic Real2Sim: Physics-based World Modeling with Vision-Language Agents</title>
 
   <!-- Enables cross-origin isolation (SharedArrayBuffer) on static hosting so the
        embedded OpenUSD viewer below can run. Registers a service worker that
@@ -61,19 +61,45 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Agentic Real2Sim: Generalized Physical World Modeling with Vision-Language Agents</h1>
+          <h1 class="title is-1 publication-title">Agentic Real2Sim: Physics-based World Modeling with Vision-Language Agents</h1>
           <div class="is-size-5 publication-authors">
-            <span class="author-block">UBC PhysAI Lab</span>
+            <span class="author-block"><a href="https://www.cs.ubc.ca/~gxchen/">Guanxiong Chen</a><sup>1,*</sup>,</span>
+            <span class="author-block"><a href="https://qianjun-xia.github.io/">Qianjun Xia</a><sup>1,*</sup>,</span>
+            <span class="author-block"><a href="https://www.linkedin.com/in/jiawei-peng-59a713190">Jiawei Peng</a><sup>2,*</sup>,</span>
+            <span class="author-block"><a href="https://home.mediosz.club/">Heng Zhang</a><sup>1,*</sup>,</span>
+            <span class="author-block"><a href="https://de.linkedin.com/in/david-bole-ma">Bole Ma</a><sup>3,*</sup>,</span>
+            <span class="author-block"><a href="https://ca.linkedin.com/in/justin-qian">Justin Qian</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="https://ca.linkedin.com/in/allison-ziyi-jiao">Ziyi Jiao</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="https://sg.linkedin.com/in/bingyang-zhou-69613b292">Bingyang Zhou</a><sup>6</sup>,</span>
+            <span class="author-block"><a href="https://www.linkedin.com/in/luoxin-ye-b584a0317">Luoxin Ye</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="https://kywind.github.io/">Kaifeng Zhang</a><sup>4</sup>,</span>
+            <span class="author-block"><a href="https://ca.linkedin.com/in/kunyi-wang-0933b2241">Kunyi Wang</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="https://www.linkedin.com/in/weijia-zeng-0a4686238">Weijia Zeng</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="https://yunuoch.github.io/">Yunuo Chen</a><sup>5</sup>,</span>
+            <span class="author-block"><a href="https://pengzhi1998.github.io/">Pengzhi Yang</a><sup>6</sup>,</span>
+            <span class="author-block"><a href="https://ziqiu-zeng.github.io/homepage/">Ziqiu Zeng</a><sup>6</sup>,</span>
+            <span class="author-block"><a href="https://wanghmin.github.io/">Huamin Wang</a><sup>7</sup>,</span>
+            <span class="author-block"><a href="https://chaoliu.tech/">Chao Liu</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="https://www.cs.jhu.edu/~ayuille1/">Alan Yuille</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="https://fanshi14.github.io/me/">Fan Shi</a><sup>6</sup>,</span>
+            <span class="author-block"><a href="https://www.cs.columbia.edu/~cxz/">Changxi Zheng</a><sup>4</sup>,</span>
+            <span class="author-block"><a href="https://people.csail.mit.edu/liyunzhu/">Yunzhu Li</a><sup>4</sup>,</span>
+            <span class="author-block"><a href="https://www.math.ucla.edu/~cffjiang/">Chenfanfu Jiang</a><sup>5</sup>,</span>
+            <span class="author-block"><a href="https://peterchencyc.com/">Peter Yichen Chen</a><sup>1</sup></span>
+          </div>
+
+          <div class="is-size-6 publication-authors">
+            <span class="author-block">* Equal technical contribution.</span>
           </div>
 
           <div class="is-size-6 publication-authors publication-institutions">
-            <span class="author-block">NHR@FAU</span>
-            <span class="author-block">Columbia University</span>
-            <span class="author-block">Style3D</span>
-            <span class="author-block">National University of Singapore</span>
-            <span class="author-block">Johns Hopkins University</span>
-            <span class="author-block">UCLA</span>
-            <span class="author-block">University of British Columbia</span>
+            <span class="author-block"><sup>1</sup> University of British Columbia</span>
+            <span class="author-block"><sup>2</sup> Johns Hopkins University</span>
+            <span class="author-block"><sup>3</sup> Erlangen National High Performance Computing Center (NHR@FAU), Friedrich-Alexander-Universität Erlangen-Nürnberg</span>
+            <span class="author-block"><sup>4</sup> Columbia University</span>
+            <span class="author-block"><sup>5</sup> University of California, Los Angeles</span>
+            <span class="author-block"><sup>6</sup> National University of Singapore</span>
+            <span class="author-block"><sup>7</sup> Style3D</span>
           </div>
 
           <div class="column has-text-centered">
@@ -117,8 +143,8 @@
                 type="video/mp4">
       </video>
       <h2 class="subtitle has-text-centered">
-        <span class="dnerf">Agentic Real2Sim</span> turns real robot recordings into executable
-        simulator twins.
+        <span class="dnerf">Agentic Real2Sim</span> turns real robot-object interaction recordings into
+        simulatable digital twins.
       </h2>
     </div>
   </div>
@@ -132,7 +158,7 @@
         <div class="item item-ar2s-052" data-video-pair>
           <div class="ar2s-video-pair">
             <div class="ar2s-video-pair-item">
-              <p class="ar2s-video-label">Real world</p>
+              <p class="ar2s-video-label">Real DROID observation</p>
               <video poster="" id="ar2s-052-real" controls muted playsinline height="100%">
                 <source src="./static/videos/ar2s_ep_052_real.mp4"
                         type="video/mp4">
@@ -140,7 +166,7 @@
               </video>
             </div>
             <div class="ar2s-video-pair-item">
-              <p class="ar2s-video-label">Synthetic</p>
+              <p class="ar2s-video-label">MuJoCo episode twin</p>
               <video poster="" id="ar2s-052-simulated" controls muted playsinline height="100%">
                 <source src="./static/videos/ar2s_ep_052_simulated.mp4"
                         type="video/mp4">
@@ -152,7 +178,7 @@
         <div class="item item-ar2s-089" data-video-pair>
           <div class="ar2s-video-pair">
             <div class="ar2s-video-pair-item">
-              <p class="ar2s-video-label">Real world</p>
+              <p class="ar2s-video-label">Real DROID observation</p>
               <video poster="" id="ar2s-089-real" controls muted playsinline height="100%">
                 <source src="./static/videos/ar2s_ep_089_real.mp4"
                         type="video/mp4">
@@ -160,7 +186,7 @@
               </video>
             </div>
             <div class="ar2s-video-pair-item">
-              <p class="ar2s-video-label">Synthetic</p>
+              <p class="ar2s-video-label">MuJoCo episode twin</p>
               <video poster="" id="ar2s-089-simulated" controls muted playsinline height="100%">
                 <source src="./static/videos/ar2s_ep_089_simulated.mp4"
                         type="video/mp4">
@@ -172,7 +198,7 @@
         <div class="item item-ar2s-091" data-video-pair>
           <div class="ar2s-video-pair">
             <div class="ar2s-video-pair-item">
-              <p class="ar2s-video-label">Real world</p>
+              <p class="ar2s-video-label">Real DROID observation</p>
               <video poster="" id="ar2s-091-real" controls muted playsinline height="100%">
                 <source src="./static/videos/ar2s_ep_091_real.mp4"
                         type="video/mp4">
@@ -180,7 +206,7 @@
               </video>
             </div>
             <div class="ar2s-video-pair-item">
-              <p class="ar2s-video-label">Synthetic</p>
+              <p class="ar2s-video-label">MuJoCo episode twin</p>
               <video poster="" id="ar2s-091-simulated" controls muted playsinline height="100%">
                 <source src="./static/videos/ar2s_ep_091_simulated.mp4"
                         type="video/mp4">
@@ -222,11 +248,11 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full">
-        <h2 class="title is-3">Explore Simulated Twins</h2>
+        <h2 class="title is-3">Explore Simulatable Episode Twins</h2>
         <div class="content has-text-justified">
           <p>
-            Explore reconstructed episodic twins directly in your browser. Each
-            scene is an OpenUSD stage rendered live through a three.js Hydra
+            Explore reconstructed simulatable episode twins directly in your browser. This
+            presentation renders each scene as an OpenUSD stage through a three.js Hydra
             delegate &mdash; drag to orbit, scroll to zoom, and right-drag to pan.
             Use the buttons below to switch between episodes.
           </p>
@@ -308,9 +334,9 @@
         <div class="content">
           <h2 class="title is-3">Deformables</h2>
           <p>
-            The same episode contract extends beyond rigid manipulation to PhysTwin-style
-            deformable interactions, where tracked geometry and physical parameters must explain
-            observed object deformation.
+            The deformable adapter follows the PhysTwin/EMPM setting, replacing rigid object pose
+            tracking with tracked geometry and point, particle, spring, or material state. Simulator
+            rollouts check whether the recovered parameters reproduce observed deformation.
           </p>
           <div class="ar2s-deformable-grid">
             <figure>
@@ -341,12 +367,50 @@
         <h2 class="title is-3">Humanoid</h2>
         <div class="content">
           <p>
-            Humanoid motion clips are retargeted into closed-loop simulator twins, with
-            controller parameters tuned so the simulated motion follows the observed reference.
+            The humanoid adapter uses motion-context retrieval, embodiment-specific initialization,
+            and closed-loop replay against retargeted reference motion. Each pair below presents a
+            reference pose and the corresponding simulated settling transient.
           </p>
-          <img src="./static/images/ar2s_humanoid.png"
-               class="ar2s-panel-image"
-               alt="Humanoid real-to-sim motion examples."/>
+          <div class="ar2s-humanoid-grid">
+            <article class="ar2s-humanoid-example">
+              <h3 class="ar2s-humanoid-example-title">Pose 13</h3>
+              <div class="ar2s-humanoid-pair">
+                <figure>
+                  <img src="./static/images/humanoid_idx13_real.png"
+                       class="ar2s-humanoid-media"
+                       alt="Real humanoid reference for pose 13.">
+                  <figcaption class="ar2s-media-caption">Real reference</figcaption>
+                </figure>
+                <figure>
+                  <video class="ar2s-humanoid-media" autoplay controls muted loop playsinline
+                         preload="metadata">
+                    <source src="./static/videos/humanoid_idx13_settling.mp4" type="video/mp4">
+                    Your browser does not support the pose 13 settling video.
+                  </video>
+                  <figcaption class="ar2s-media-caption">Settling transient</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="ar2s-humanoid-example">
+              <h3 class="ar2s-humanoid-example-title">Pose 20</h3>
+              <div class="ar2s-humanoid-pair">
+                <figure>
+                  <img src="./static/images/humanoid_idx20_real.png"
+                       class="ar2s-humanoid-media"
+                       alt="Real humanoid reference for pose 20.">
+                  <figcaption class="ar2s-media-caption">Real reference</figcaption>
+                </figure>
+                <figure>
+                  <video class="ar2s-humanoid-media" autoplay controls muted loop playsinline
+                         preload="metadata">
+                    <source src="./static/videos/humanoid_idx20_settling.mp4" type="video/mp4">
+                    Your browser does not support the pose 20 settling video.
+                  </video>
+                  <figcaption class="ar2s-media-caption">Settling transient</figcaption>
+                </figure>
+              </div>
+            </article>
+          </div>
         </div>
       </div>
     </div>

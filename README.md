@@ -1,8 +1,8 @@
-# Agentic Real2Sim Website
+# Agentic Real2Sim: Physics-based World Modeling with Vision-Language Agents
 
-This is the repository for the website showcasing **Agentic Real2Sim** by UBC
-PhysAI Lab. It is forked from the [Nerfies website](https://nerfies.github.io)
-template.
+This is the repository for the website showcasing **Agentic Real2Sim**, a framework for
+converting real-world physical interaction recordings into simulatable digital twins. It is
+forked from the [Nerfies website](https://nerfies.github.io) template.
 
 Preview locally with:
 

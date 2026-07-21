@@ -212,6 +212,45 @@ body {
   margin-top: 1.5rem;
 }
 
+.ar2s-humanoid-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ar2s-humanoid-example {
+  min-width: 0;
+}
+
+.ar2s-humanoid-example-title {
+  margin: 0 0 0.75rem;
+  color: #363636;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.ar2s-humanoid-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.content .ar2s-humanoid-pair figure {
+  min-width: 0;
+  margin: 0;
+}
+
+.content .ar2s-humanoid-pair .ar2s-humanoid-media {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
 /* Episode switcher buttons */
 .ar2s-usd-switcher {
   display: flex;
@@ -274,7 +313,8 @@ body {
 
 @media screen and (max-width: 768px) {
   .ar2s-video-pair,
-  .ar2s-deformable-grid {
+  .ar2s-deformable-grid,
+  .ar2s-humanoid-grid {
     grid-template-columns: 1fr;
   }
 

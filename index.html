@@ -80,7 +80,7 @@
             <div class="publication-links">
               <!-- PDF Link. -->
               <span class="link-block">
-                <a href="https://arxiv.org/pdf/2011.12948"
+                <a href="./static/pdfs/agentic-real2sim.pdf"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -88,44 +88,17 @@
                   <span>Paper</span>
                 </a>
               </span>
-              <span class="link-block">
-                <a href="https://arxiv.org/abs/2011.12948"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <!-- Video Link. -->
-              <span class="link-block">
-                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span>
               <!-- Code Link. -->
               <span class="link-block">
-                <a href="https://github.com/google/nerfies"
-                   class="external-link button is-normal is-rounded is-dark">
+                <button type="button"
+                        class="button is-normal is-rounded is-dark ar2s-disabled-action"
+                        aria-disabled="true"
+                        disabled>
                   <span class="icon">
                       <i class="fab fa-github"></i>
                   </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-              <!-- Dataset Link. -->
-              <span class="link-block">
-                <a href="https://github.com/google/nerfies/releases/tag/0.1"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="far fa-images"></i>
-                  </span>
-                  <span>Data</span>
-                </a>
+                  <span>Code (coming soon)</span>
+                </button>
               </span>
             </div>
 
@@ -156,41 +129,65 @@
   <div class="hero-body">
     <div class="container">
       <div id="results-carousel" class="carousel results-carousel">
-        <div class="item item-ar2s-052-real">
-          <video poster="" id="ar2s-052-real" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/ar2s_ep_052_real.mp4"
-                    type="video/mp4">
-          </video>
+        <div class="item item-ar2s-052" data-video-pair>
+          <div class="ar2s-video-pair">
+            <div class="ar2s-video-pair-item">
+              <p class="ar2s-video-label">Real world</p>
+              <video poster="" id="ar2s-052-real" controls muted playsinline height="100%">
+                <source src="./static/videos/ar2s_ep_052_real.mp4"
+                        type="video/mp4">
+                Your browser does not support the real-world video.
+              </video>
+            </div>
+            <div class="ar2s-video-pair-item">
+              <p class="ar2s-video-label">Synthetic</p>
+              <video poster="" id="ar2s-052-simulated" controls muted playsinline height="100%">
+                <source src="./static/videos/ar2s_ep_052_simulated.mp4"
+                        type="video/mp4">
+                Your browser does not support the synthetic video.
+              </video>
+            </div>
+          </div>
         </div>
-        <div class="item item-ar2s-052-simulated">
-          <video poster="" id="ar2s-052-simulated" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/ar2s_ep_052_simulated.mp4"
-                    type="video/mp4">
-          </video>
+        <div class="item item-ar2s-089" data-video-pair>
+          <div class="ar2s-video-pair">
+            <div class="ar2s-video-pair-item">
+              <p class="ar2s-video-label">Real world</p>
+              <video poster="" id="ar2s-089-real" controls muted playsinline height="100%">
+                <source src="./static/videos/ar2s_ep_089_real.mp4"
+                        type="video/mp4">
+                Your browser does not support the real-world video.
+              </video>
+            </div>
+            <div class="ar2s-video-pair-item">
+              <p class="ar2s-video-label">Synthetic</p>
+              <video poster="" id="ar2s-089-simulated" controls muted playsinline height="100%">
+                <source src="./static/videos/ar2s_ep_089_simulated.mp4"
+                        type="video/mp4">
+                Your browser does not support the synthetic video.
+              </video>
+            </div>
+          </div>
         </div>
-        <div class="item item-ar2s-089-real">
-          <video poster="" id="ar2s-089-real" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/ar2s_ep_089_real.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-ar2s-089-simulated">
-          <video poster="" id="ar2s-089-simulated" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/ar2s_ep_089_simulated.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-ar2s-091-real">
-          <video poster="" id="ar2s-091-real" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/ar2s_ep_091_real.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-ar2s-091-simulated">
-          <video poster="" id="ar2s-091-simulated" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/ar2s_ep_091_simulated.mp4"
-                    type="video/mp4">
-          </video>
+        <div class="item item-ar2s-091" data-video-pair>
+          <div class="ar2s-video-pair">
+            <div class="ar2s-video-pair-item">
+              <p class="ar2s-video-label">Real world</p>
+              <video poster="" id="ar2s-091-real" controls muted playsinline height="100%">
+                <source src="./static/videos/ar2s_ep_091_real.mp4"
+                        type="video/mp4">
+                Your browser does not support the real-world video.
+              </video>
+            </div>
+            <div class="ar2s-video-pair-item">
+              <p class="ar2s-video-label">Synthetic</p>
+              <video poster="" id="ar2s-091-simulated" controls muted playsinline height="100%">
+                <source src="./static/videos/ar2s_ep_091_simulated.mp4"
+                        type="video/mp4">
+                Your browser does not support the synthetic video.
+              </video>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -231,20 +228,6 @@
     </div>
     <!--/ Abstract. -->
 
-    <!-- Paper video. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Video</h2>
-        <div class="publication-video">
-          <!-- `credentialless` lets this cross-origin embed load while the page is
-               cross-origin isolated for the USD viewer (Chromium). -->
-          <iframe src="https://www.youtube-nocookie.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
-                  credentialless
-                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-    <!--/ Paper video. -->
   </div>
 </section>
 
@@ -257,7 +240,7 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full">
-        <h2 class="title is-3">Interactive Simulator Twin</h2>
+        <h2 class="title is-3">Interactive Twin (Replay)</h2>
         <div class="content has-text-justified">
           <p>
             Explore reconstructed episodic twins directly in your browser. Each
@@ -339,7 +322,7 @@
     <div class="columns is-centered">
 
       <!-- Deformables. -->
-      <div class="column">
+      <div class="column is-full">
         <div class="content">
           <h2 class="title is-3">Deformables</h2>
           <p>
@@ -347,27 +330,41 @@
             deformable interactions, where tracked geometry and physical parameters must explain
             observed object deformation.
           </p>
-          <img src="./static/images/ar2s_deformables.png"
-               class="ar2s-panel-image"
-               alt="PhysTwin-style deformable object examples."/>
+          <div class="ar2s-deformable-grid">
+            <figure>
+              <video class="ar2s-panel-video" autoplay controls muted loop playsinline>
+                <source src="./static/videos/double_drag_cloth_26-07-15_tracked_pc.mp4"
+                        type="video/mp4">
+                Your browser does not support the double-drag cloth video.
+              </video>
+              <figcaption class="ar2s-media-caption">Double-drag cloth</figcaption>
+            </figure>
+            <figure>
+              <video class="ar2s-panel-video" autoplay controls muted loop playsinline>
+                <source src="./static/videos/double_stretch_Toyandona_sloth_26-05-18_tracked_pc.mp4"
+                        type="video/mp4">
+                Your browser does not support the double-stretch plush video.
+              </video>
+              <figcaption class="ar2s-media-caption">Double-stretch plush</figcaption>
+            </figure>
+          </div>
         </div>
       </div>
       <!--/ Deformables. -->
+    </div>
 
-      <!-- Humanoid. -->
-      <div class="column">
+    <!-- Humanoid. -->
+    <div class="columns is-centered ar2s-humanoid-block">
+      <div class="column is-full">
         <h2 class="title is-3">Humanoid</h2>
-        <div class="columns is-centered">
-          <div class="column content">
-            <p>
-              Humanoid motion clips are retargeted into closed-loop simulator twins, with
-              controller parameters tuned so the simulated motion follows the observed reference.
-            </p>
-            <img src="./static/images/ar2s_humanoid.png"
-                 class="ar2s-panel-image"
-                 alt="Humanoid real-to-sim motion examples."/>
-          </div>
-
+        <div class="content">
+          <p>
+            Humanoid motion clips are retargeted into closed-loop simulator twins, with
+            controller parameters tuned so the simulated motion follows the observed reference.
+          </p>
+          <img src="./static/images/ar2s_humanoid.png"
+               class="ar2s-panel-image"
+               alt="Humanoid real-to-sim motion examples."/>
         </div>
       </div>
     </div>
@@ -422,11 +419,8 @@
   <div class="container">
     <div class="content has-text-centered">
       <a class="icon-link"
-         href="https://arxiv.org/pdf/2011.12948">
+         href="./static/pdfs/agentic-real2sim.pdf">
         <i class="fas fa-file-pdf"></i>
-      </a>
-      <a class="icon-link" href="https://github.com/google/nerfies" class="external-link">
-        <i class="fab fa-github"></i>
       </a>
     </div>
     <div class="columns is-centered">

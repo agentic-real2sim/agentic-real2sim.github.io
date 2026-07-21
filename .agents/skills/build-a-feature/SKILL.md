@@ -1,6 +1,6 @@
 ---
 name: build-a-feature
-description: Explore the codebase, produce a concrete implementation plan, implement the feature, then validate it using multiple subagents.
+description: "Use only for feature, patch, or fix work that requires considerable effort: explore the codebase, produce a concrete implementation plan, implement the change, then validate it using multiple subagents. Do not use this skill for small or minuscule changes that can be handled directly."
 ---
 
 # build-a-feature

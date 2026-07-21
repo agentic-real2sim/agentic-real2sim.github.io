@@ -24,7 +24,7 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/favicon.svg">
+  <link rel="icon" type="image/png" href="./static/images/ubc_physai_icon.png">
 
   <!-- Self-hosted so it loads under this page's COEP policy (cross-origin CDN
        scripts are blocked once the page is cross-origin isolated). -->
@@ -203,25 +203,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Real-to-sim conversion for robotic interaction remains labor-intensive because a usable
-            simulation needs more than visual reconstruction. It must recover scene geometry and
-            object state, infer physical parameters, and assemble actors, cameras, poses, and
-            trajectories into a runnable physical environment.
-          </p>
-          <p>
-            We introduce <span class="dnerf">Agentic Real2Sim</span>, a framework for generalized
-            physical world modeling with vision-language agents. Given stereo RGB-D videos, camera
-            intrinsics and extrinsics, and robot trajectories, Agentic Real2Sim converts raw
-            recordings into simulatable episodic twins that preserve observations, geometry, robot
-            interaction, and object state.
-          </p>
-          <p>
-            The framework combines a visual processing agent for segmentation, geometry recovery,
-            and pose tracking; a physical-prior agent for inferring material and physical
-            parameters; a scene preparation agent for aligning cameras, ground planes, object
-            placement, and trajectories; and simulator-in-the-loop grasp optimization. We evaluate
-            it across rigid-object manipulation, deformable-object interaction, and humanoid motion
-            scenes, spanning domains that are usually handled by separate Real2Sim pipelines.
+            Real-to-sim conversion for robotic interaction with objects remains labor-intensive because it requires more than visual reconstruction: a streamlined real2sim process must recover scene geometries and object states, infer physical parameters, and assemble actors, objects, cameras, poses, and trajectories into a runnable physical simulation. Today this process still depends on manual tuning of visual foundation models, mesh cleanup, coordinate-frame alignment, and brittle workflow glue across visual perception tools and simulators. We introduce <span class="dnerf">Agentic Real2Sim</span>, a framework for generalized physical world modeling with vision-language agents, converting a real-world recording of object-robot interaction into a simulatable episodic twin which preserves observations, geometries, robot interactions, and object states. We evaluate Agentic Real2Sim on rigid-object manipulation, deformable-object interaction, and humanoid motion scenes, spanning domains that are usually handled by separate Real2Sim pipelines, marking a first step toward scalable conversion. The framework's agentic decisions can be driven by an open-weight VLM backend at a small fraction of the cost of frontier models, while attaining comparable conversion success rate. We aim to use the resulting real-world-aligned twins for downstream robotics tasks, specifically policy learning and evaluation.
           </p>
         </div>
       </div>
@@ -240,7 +222,7 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full">
-        <h2 class="title is-3">Interactive Twin (Replay)</h2>
+        <h2 class="title is-3">Explore Simulated Twins</h2>
         <div class="content has-text-justified">
           <p>
             Explore reconstructed episodic twins directly in your browser. Each
@@ -370,33 +352,19 @@
     </div>
     <!--/ Humanoid. -->
 
-
-    <!-- Concurrent Work. -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Related Links</h2>
-
-        <div class="content has-text-justified">
-          <p>
-            There's a lot of excellent work that was introduced around the same time as ours.
-          </p>
-          <p>
-            <a href="https://arxiv.org/abs/2104.09125">Progressive Encoding for Neural Optimization</a> introduces an idea similar to our windowed position encoding for coarse-to-fine optimization.
-          </p>
-          <p>
-            <a href="https://www.albertpumarola.com/research/D-NeRF/index.html">D-NeRF</a> and <a href="https://gvv.mpi-inf.mpg.de/projects/nonrigid_nerf/">NR-NeRF</a>
-            both use deformation fields to model non-rigid scenes.
-          </p>
-          <p>
-            Some works model videos with a NeRF by directly modulating the density, such as <a href="https://video-nerf.github.io/">Video-NeRF</a>, <a href="https://www.cs.cornell.edu/~zl548/NSFF/">NSFF</a>, and <a href="https://neural-3d-video.github.io/">DyNeRF</a>
-          </p>
-          <p>
-            There are probably many more by the time you are reading this. Check out <a href="https://dellaert.github.io/NeRF/">Frank Dellart's survey on recent NeRF papers</a>, and <a href="https://github.com/yenchenlin/awesome-NeRF">Yen-Chen Lin's curated list of NeRF papers</a>.
-          </p>
+    <!-- Paper video. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <video controls playsinline preload="metadata">
+            <source src="./static/videos/demo_0718.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
         </div>
       </div>
     </div>
-    <!--/ Concurrent Work. -->
+    <!--/ Paper video. -->
 
   </div>
 </section>
@@ -405,11 +373,13 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@article{park2021nerfies,
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
-  title     = {Nerfies: Deformable Neural Radiance Fields},
-  journal   = {ICCV},
-  year      = {2021},
+    <pre><code>@misc{chen2026agenticreal2sim,
+  author       = {Guanxiong Chen and Qianjun Xia and Jiawei Peng and Heng Zhang and Bole Ma and Justin Qian and Ziyi Jiao and Bingyang Zhou and Luoxin Ye and Kaifeng Zhang and Kunyi Wang and Weijia Zeng and Yunuo Chen and Pengzhi Yang and Ziqiu Zeng and Huamin Wang and Chao Liu and Alan Yuille and Fan Shi and Changxi Zheng and Yunzhu Li and Chenfanfu Jiang and Peter Yichen Chen},
+  title        = {{Agentic Real2Sim}: Physics-based World Modeling with Vision-Language Agents},
+  year         = {2026},
+  month        = jun,
+  howpublished = {Project website},
+  url          = {https://ericchen321.github.io/agentic_real2sim.github.io/}
 }</code></pre>
   </div>
 </section>

@@ -8,6 +8,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agentic Real2Sim: Generalized Physical World Modeling with Vision-Language Agents</title>
 
+  <!-- Enables cross-origin isolation (SharedArrayBuffer) on static hosting so the
+       embedded OpenUSD viewer below can run. Registers a service worker that
+       re-serves responses with COOP/COEP (credentialless) headers; the top-level
+       page must be isolated for the same-origin viewer iframe to be isolated too.
+       Loaded first so it takes effect before the rest of the page. -->
+  <script src="./coi-serviceworker.js"></script>
+
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
         rel="stylesheet">
 
@@ -19,7 +26,9 @@
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="./static/images/favicon.svg">
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- Self-hosted so it loads under this page's COEP policy (cross-origin CDN
+       scripts are blocked once the page is cross-origin isolated). -->
+  <script src="./static/js/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome.all.min.js"></script>
   <script src="./static/js/bulma-carousel.min.js"></script>
   <script src="./static/js/index.js"></script>
@@ -227,13 +236,100 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3">Video</h2>
         <div class="publication-video">
-          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
+          <!-- `credentialless` lets this cross-origin embed load while the page is
+               cross-origin isolated for the USD viewer (Chromium). -->
+          <iframe src="https://www.youtube-nocookie.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
+                  credentialless
                   frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
       </div>
     </div>
     <!--/ Paper video. -->
   </div>
+</section>
+
+
+<!-- Interactive USD viewer. Embeds the OpenUSD (three.js Hydra) viewer as a
+     same-origin iframe and auto-loads a simulator-twin episode on start. The
+     viewer is fully self-contained under /usd-viewer and needs the cross-origin
+     isolation enabled by coi-serviceworker.js (see <head>). -->
+<section class="section" id="interactive-viewer">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Interactive Simulator Twin</h2>
+        <div class="content has-text-justified">
+          <p>
+            Explore reconstructed episodic twins directly in your browser. Each
+            scene is an OpenUSD stage rendered live through a three.js Hydra
+            delegate &mdash; drag to orbit, scroll to zoom, and right-drag to pan.
+            Use the buttons below to switch between episodes.
+          </p>
+        </div>
+
+        <!-- Episode switcher. Buttons post a message to the viewer iframe to load
+             a different USD in-place (no page/WASM reload). data-file is resolved
+             relative to the viewer page (./usd-viewer/). -->
+        <div class="ar2s-usd-switcher" id="usd-switcher">
+          <button type="button" class="ar2s-usd-btn is-active" data-file="tri-success-nov8-2023-sample12.usd" data-label="TRI · Sample 12">TRI</button>
+          <button type="button" class="ar2s-usd-btn" data-file="autolab-success-jul14-2023-sample00.usd" data-label="AUTOLab · Sample 00">AUTOLab</button>
+          <button type="button" class="ar2s-usd-btn" data-file="usd-success-aug31-2023-sample01.usd" data-label="USD · Sample 01">USD</button>
+          <button type="button" class="ar2s-usd-btn" data-file="pennpal-success-apr29-2023-sample05.usd" data-label="PennPAL · Sample 05">PennPAL</button>
+          <button type="button" class="ar2s-usd-btn" data-file="guptalab-success-may19-2023-sample19.usd" data-label="GuptaLab · Sample 19">GuptaLab</button>
+        </div>
+
+        <div class="ar2s-usd-viewer">
+          <iframe
+            id="usd-viewer-frame"
+            title="Interactive OpenUSD simulator twin"
+            src="./usd-viewer/?viewer=three&file=tri-success-nov8-2023-sample12.usd"
+            loading="lazy"
+            allow="cross-origin-isolated; fullscreen; xr-spatial-tracking"
+            allowfullscreen></iframe>
+        </div>
+        <p class="ar2s-usd-viewer-caption" id="usd-viewer-caption">
+          OpenUSD stage <code>TRI &middot; Sample 12</code>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var frame = document.getElementById('usd-viewer-frame');
+      var switcher = document.getElementById('usd-switcher');
+      var caption = document.getElementById('usd-viewer-caption');
+      if (!frame || !switcher) return;
+
+      var ready = false;   // set once the viewer's switch bridge is live
+      var pending = null;  // last requested switch, flushed on ready
+
+      function send(msg) {
+        if (ready) frame.contentWindow.postMessage(msg, '*');
+        else pending = msg; // the viewer signals readiness once initialized
+      }
+
+      window.addEventListener('message', function (event) {
+        if (event.source !== frame.contentWindow) return;
+        if (event.data && event.data.type === 'usd-viewer:ready') {
+          ready = true;
+          if (pending) { frame.contentWindow.postMessage(pending, '*'); pending = null; }
+        }
+      });
+
+      switcher.addEventListener('click', function (event) {
+        var btn = event.target.closest('.ar2s-usd-btn');
+        if (!btn || btn.classList.contains('is-active')) return;
+
+        switcher.querySelectorAll('.ar2s-usd-btn').forEach(function (b) {
+          b.classList.toggle('is-active', b === btn);
+        });
+        if (caption) caption.innerHTML = 'OpenUSD stage <code>' + btn.dataset.label + '</code>';
+
+        send({ type: 'usd-viewer:load', file: btn.dataset.file, label: btn.dataset.label });
+      });
+    })();
+  </script>
 </section>
 
 

@@ -1,0 +1,81 @@
+{
+  "name": "@needle-tools/materialx",
+  "description": "MaterialX material support for three.js and Needle Engine – render physically based MaterialX shaders in the browser via WebAssembly",
+  "version": "1.7.3",
+  "type": "module",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "require": "./index.js"
+    },
+    "./needle": {
+      "types": "./needle.d.ts",
+      "import": "./needle.js",
+      "require": "./needle.js"
+    },
+    "./package.json": "./package.json",
+    "./codegen/register_types.ts": {
+      "import": "./codegen/register_types.ts",
+      "require": "./codegen/register_types.js"
+    }
+  },
+  "peerDependencies": {
+    "three": ">=0.160.0"
+  },
+  "scripts": {
+    "test": "node --import=./tests/unit/register-json-loader.js --test tests/unit/**/*.test.js",
+    "test:runtime:node": "node tests/runtime/materialx-runtime-smoke.mjs",
+    "test:runtime:deno": "deno run --allow-read --no-lock --node-modules-dir=auto tests/runtime/materialx-runtime-smoke.mjs",
+    "test:runtime:bun": "bun tests/runtime/materialx-runtime-smoke.mjs"
+  },
+  "devDependencies": {
+    "@needle-tools/engine": "4.x",
+    "@types/three": "0.169.0",
+    "dotenv": "^17.2.4",
+    "jsdom": "^29.0.1",
+    "three": "npm:@needle-tools/three@^0.169.5"
+  },
+  "overrides": {
+    "@needle-tools/gltf-progressive": "3.6.0-beta.2"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "needle.js",
+    "needle.d.ts",
+    "src/",
+    "bin/",
+    "codegen/",
+    "README.md",
+    "CHANGELOG.md",
+    "package.needle.json"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "keywords": [
+    "needle",
+    "materialx",
+    "material",
+    "shader",
+    "threejs",
+    "three.js",
+    "webgl",
+    "webgpu",
+    "mtlx",
+    "rendering",
+    "gltf",
+    "pbr",
+    "3d",
+    "wasm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/needle-tools/needle-engine-materialx.git"
+  }
+}

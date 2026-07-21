@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, viewport-fit=cover" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <title>USD Viewer</title>
+
+  <!-- Cross-origin isolation for SharedArrayBuffer on static hosting (e.g. GitHub
+       Pages). Registers a service worker that re-serves responses with COOP/COEP
+       headers. Must run before any module that needs SharedArrayBuffer. When this
+       page is already embedded in an isolated top-level document the script sees
+       crossOriginIsolated and no-ops. -->
+  <script src="./coi-serviceworker.js"></script>
+
+  <script>
+    // This static build drops the Needle asset-cache service worker; make the
+    // viewer's readiness gate resolve immediately instead of waiting on it.
+    window.__usdViewerAssetCacheMode = false;
+    window.__usdViewerAssetCacheReady = Promise.resolve(null);
+    // MaterialX locates its wasm relative to this base; resolve against the page
+    // so it works whether the site is served from the origin root or a subpath.
+    globalThis.NEEDLE_MATERIALX_LOCATION = new URL('./materialx/bin/', document.baseURI).href;
+  </script>
+
+  <!-- Lighting config — edit viewer-config.js to change how the scene is lit. -->
+  <script src="./viewer-config.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800&display=swap">
+
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Embed chrome removal: this page is iframed as a bare interactive canvas,
+       so all app chrome (header pill, filename bar, drop hint, footer log) is
+       hidden. The DOM nodes stay in place because viewer-app.js looks them up by
+       id/selector; hiding them keeps every handler wired without null errors. -->
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #0b1320; }
+    #top-center,
+    .filename-bar,
+    .footer,
+    #dropzone { display: none !important; }
+  </style>
+</head>
+<body>
+  <!-- three.js viewer runtime. Import map uses relative paths so the whole
+       viewer is self-contained under this folder and portable to any subpath. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./three/build/three.module.js",
+      "viewer-runtime": "./viewer-runtime-three.js",
+      "three/addons/": "./three/examples/jsm/",
+      "three/examples/jsm/": "./three/examples/jsm/",
+      "@needle-tools/materialx": "./materialx/index.js",
+      "/test-fixtures/test-asset-library.js": "./test-asset-library.js"
+    }
+  }
+  </script>
+  <script type="module">
+    // The OpenUSD runtime uses SharedArrayBuffer, which requires the page to be
+    // cross-origin isolated. On a first visit coi-serviceworker.js installs the
+    // COOP/COEP headers and reloads the page; don't boot the WASM runtime until
+    // that reload lands as an isolated context, otherwise thread setup throws a
+    // SharedArrayBuffer/DataCloneError. After the reload this is true and the
+    // app starts normally.
+    if (window.crossOriginIsolated) {
+      import('./index.three.js');
+    } else {
+      console.info('[usd-viewer] waiting for cross-origin isolation before starting the USD runtime…');
+    }
+  </script>
+
+  <h1 class="sr-only">USD Viewer</h1>
+
+  <!-- Centered top stack: the header pill, with the loaded-file row below it. -->
+  <div id="top-center">
+  <div id="container" style="position:relative;">
+    <div class="buttons">
+      <a href="https://needle.tools" target="_blank" rel="noopener" class="needle-logo-link">
+        <img src="needle-logo-black.svg" alt="Needle" class="needle-logo" />
+      </a>
+      <span class="app-wordmark">USD Viewer</span>
+    <div class="viewer-mode-toggle converter-toggle" id="viewer-mode-toggle" role="group" aria-label="Viewer renderer">
+      <button type="button" data-viewer-mode="needle-loader">Needle</button>
+      <button type="button" data-viewer-mode="three" class="active">three.js</button>
+    </div>
+    <a href="#" id="about-link" data-open-about><img src="usd-logo.png" alt="" class="usd-logo" /><span class="about-text">About</span></a>
+
+    <div class="dropdown">
+      <button class="dropdown-button">
+        <svg class="btn-icon notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2.5 21 7v10l-9 4.5L3 17V7z"/>
+          <path d="M3 7l9 4.5L21 7"/>
+          <path d="M12 11.5v10"/>
+        </svg>
+        Load Sample
+      </button>
+      <div class="dropdown-content">
+        <div class="dropdown-menu">
+          <div class="sample-group-list" id="sample-group-list" role="listbox" aria-label="Sample groups">
+            <button type="button" class="sample-group-button sample-root-folder active" data-sample-group="gltf" role="option" aria-selected="true" aria-expanded="true">
+              <span>glTF USD conversions</span>
+              <small>Converted from glTF Sample Assets</small>
+            </button>
+            <div class="sample-group-tree" id="gltf-group-tree" aria-label="glTF Sample Asset tags"></div>
+            <button type="button" class="sample-group-button sample-root-folder" data-sample-group="usd-wg" role="option" aria-selected="false" aria-expanded="false">
+              <span>USD Working Group Assets</span>
+              <small>Production USD samples</small>
+            </button>
+            <div class="sample-group-tree" id="usd-wg-group-tree" aria-label="USD Working Group asset folders" hidden></div>
+            <button type="button" class="sample-group-button sample-root-folder" data-sample-group="needle" role="option" aria-selected="false" aria-expanded="false">
+              <span>Needle</span>
+              <small>Viewer fixtures and hosted assets</small>
+            </button>
+            <div class="sample-group-tree" id="needle-group-tree" aria-label="Needle asset folders" hidden></div>
+          </div>
+          <div class="dropdown-section sample-external-links">
+            <h4>More</h4>
+            <a href="https://asset-explorer.needle.tools" target="_blank" rel="noopener">Needle Asset Explorer</a>
+            <a href="https://github.com/usd-wg/assets" target="_blank">Browse usd-wg/assets</a>
+          </div>
+        </div>
+        <div class="gallery-flyout" id="gallery-panel">
+          <div class="gallery-panel-head">
+            <div class="gallery-panel-title">
+              <h4 id="gallery-title">glTF &rarr; USD conversions</h4>
+              <span class="gallery-panel-subtitle" id="gallery-subtitle">Converted from glTF Sample Assets</span>
+            </div>
+          </div>
+          <p id="gallery-status" class="gallery-status">Hover to load sample models&hellip;</p>
+          <div id="gallery-grid" class="gallery-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <a href="#" id="feedback-link" class="feedback-button" data-open-feedback><svg class="inline-icon notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg><span class="feedback-text">Feedback</span></a>
+    <button type="button" id="debug-test-button" class="debug-test-button" hidden>Test</button>
+
+    <div class="header-overflow" id="header-overflow">
+      <button class="header-overflow-button" type="button" aria-label="More actions" aria-expanded="false" aria-controls="header-overflow-menu">
+        <svg class="inline-icon notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="1"/>
+          <circle cx="19" cy="12" r="1"/>
+          <circle cx="5" cy="12" r="1"/>
+        </svg>
+      </button>
+      <div class="header-overflow-menu" id="header-overflow-menu">
+        <a href="#" data-open-about><img src="usd-logo.png" alt="" class="usd-logo" /><span>About</span></a>
+        <a href="#" data-open-feedback><svg class="inline-icon notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg><span>Feedback</span></a>
+        <a href="#" class="export-button" data-export-gltf><svg class="inline-icon notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4"/><path d="M15.4 6.5l-6.8 4"/></svg><span>Share USD</span></a>
+      </div>
+    </div>
+
+    <a href="#" id="export-gltf" class="export-button" data-export-gltf><svg class="inline-icon notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4"/><path d="M15.4 6.5l-6.8 4"/></svg>Share USD</a>
+  </div>
+
+  </div>
+
+  <div class="filename-bar">
+    <span class="filename"><svg class="inline-icon notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span class="filename-text"></span></span>
+    <div class="loaded-converter-control" id="loaded-converter-toggle-wrap" hidden>
+      <span>converted with</span>
+      <div class="converter-toggle converter-toggle-inline" id="loaded-converter-toggle" role="group" aria-label="Converted with"></div>
+    </div>
+    <span class="filename-sep" aria-hidden="true">&ndash;</span>
+    <a class="file clear-button" href="?file=" title="Clear loaded model"><svg class="inline-icon notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Clear</a>
+  </div>
+  </div>
+
+  <!-- Centered drop hint, shown while no model is loaded -->
+  <div id="dropzone" aria-hidden="true">
+    <div class="dropzone-inner">
+      <svg class="dropzone-icon notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 16V4"/>
+        <path d="M7 9l5-5 5 5"/>
+        <path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/>
+      </svg>
+      <p class="dropzone-title">Drop a USD or USDZ file to view it</p>
+      <p class="dropzone-subtitle">or pick a sample from the "Load Sample" menu</p>
+    </div>
+  </div>
+
+  <!-- Centered loading overlay, shown while a file is loading -->
+  <div id="loading-overlay" aria-hidden="true">
+    <div class="loading-overlay-inner">
+      <span class="spinner spinner-md notranslate" translate="no" aria-hidden="true"></span>
+      <span class="loading-overlay-word">Loading</span>
+      <span id="loading-overlay-filename" class="loading-overlay-filename"></span>
+      <span id="loading-overlay-progress" class="loading-overlay-progress" hidden></span>
+      <span class="loading-overlay-sep" aria-hidden="true">&ndash;</span>
+      <button id="loading-cancel-btn" class="loading-cancel-button" type="button" title="Cancel" aria-label="Cancel loading">
+        <svg class="notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Centered load-error card — shown when a file fails to load (e.g. 404). -->
+  <div id="load-error" class="load-error" role="alert" aria-live="assertive">
+    <div class="load-error-inner">
+      <svg class="load-error-icon notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      <p class="load-error-title" id="load-error-message">Couldn't load this file.</p>
+      <button id="load-error-dismiss" class="load-error-dismiss" type="button" title="Dismiss" aria-label="Dismiss">
+        <svg class="notranslate" translate="no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- About Dialog -->
+  <div id="about-dialog" class="dialog-overlay">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h2>About USD Viewer</h2>
+        <button class="dialog-close" id="dialog-close-btn">&times;</button>
+      </div>
+      <div class="dialog-content">
+        <p>A free, in-browser viewer for <strong>OpenUSD</strong> files, built and maintained by <a href="https://needle.tools" target="_blank" rel="noopener">Needle</a>. It runs OpenUSD compiled to WebAssembly and rendered through the three.js Hydra bridge — nothing is uploaded, everything runs locally.</p>
+        <fieldset class="runtime-info-box" aria-label="OpenUSD runtime build information">
+          <legend class="runtime-info-legend">OpenUSD runtime</legend>
+          <p id="openusd-build-info" class="runtime-info">loading&hellip;</p>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share-USD dialog -->
+  <div id="export-dialog" class="dialog-overlay">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h2>Share USD</h2>
+        <button class="dialog-close" id="export-dialog-close-btn" aria-label="Close">&times;</button>
+      </div>
+      <div class="dialog-content">
+        <div class="dialog-cta">
+          <button id="export-download-direct" type="button" class="cta-secondary">Just the raw GLB</button>
+          <a id="export-cloud-cta" class="cta-primary" href="https://cloud.needle.tools/" target="_blank" rel="noopener"><span>Upload &amp; Optimize on Needle&nbsp;Cloud</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback dialog -->
+  <div id="feedback-dialog" class="dialog-overlay">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h2>Feedback &amp; feature requests</h2>
+        <button class="dialog-close" id="feedback-dialog-close-btn" aria-label="Close">&times;</button>
+      </div>
+      <div class="dialog-content">
+        <form id="feedback-form" class="feedback-form" novalidate>
+          <label class="feedback-label" for="feedback-message">Your message</label>
+          <textarea id="feedback-message" name="message" class="feedback-textarea" rows="5" maxlength="4000" required placeholder="What's on your mind?"></textarea>
+          <label class="feedback-label" for="feedback-email">Email <span class="feedback-optional">(optional)</span></label>
+          <input id="feedback-email" name="email" class="feedback-input" type="email" maxlength="320" autocomplete="email" placeholder="you@example.com" />
+          <div class="feedback-hp" aria-hidden="true">
+            <label for="feedback-website">Website</label>
+            <input id="feedback-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="dialog-cta">
+            <span id="feedback-status" class="feedback-status" role="status" aria-live="polite"></span>
+            <button id="feedback-submit" type="submit" class="cta-primary">Send feedback</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-content">
+      <span id="loading-spinner" class="spinner notranslate" translate="no" aria-hidden="true"></span>
+      <p id="message-log">Waiting for initialization to start...</p>
+      <button id="clear-log-btn" class="clear-log-button" title="Clear log" disabled>Clear</button>
+    </div>
+  </div>
+</body>
+</html>

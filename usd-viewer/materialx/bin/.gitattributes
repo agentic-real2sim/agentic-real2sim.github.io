@@ -1,0 +1,4 @@
+# ensure LF line endings
+*.data binary
+*.data.txt binary
+*.wasm binary

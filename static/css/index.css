@@ -364,12 +364,17 @@ body {
 @media screen and (max-width: 768px) {
   .ar2s-video-pair,
   .ar2s-deformable-grid,
-  .ar2s-humanoid-grid,
-  .ar2s-policy-grid {
+  .ar2s-humanoid-grid {
     grid-template-columns: 1fr;
   }
 
   .ar2s-usd-viewer {
     aspect-ratio: 4 / 3;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .ar2s-policy-grid {
+    grid-template-columns: 1fr;
   }
 }

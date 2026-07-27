@@ -1,0 +1,10 @@
+path=/media/eric/data/droid_sim/data_from_qianjun/policy_eval_sim_3dgs-20260726T051956Z-1-001/CLVR_success_2023_05_21_19_29_34/video_raw_ext1.mp4
+codec_name=h264
+codec_type=video
+width=1280
+height=720
+avg_frame_rate=15/1
+duration=23.333333
+nb_read_frames=350
+duration=23.334000
+size=5088078

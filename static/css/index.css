@@ -311,10 +311,61 @@ body {
   color: #777;
 }
 
+.ar2s-policy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ar2s-policy-episode {
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.ar2s-policy-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.content .ar2s-policy-pair figure {
+  margin: 0;
+  min-width: 0;
+}
+
+.ar2s-policy-label {
+  margin-bottom: 0.35rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ar2s-policy-media {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.ar2s-policy-activity {
+  margin: 0.75rem 0 0;
+  color: #777;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
 @media screen and (max-width: 768px) {
   .ar2s-video-pair,
   .ar2s-deformable-grid,
-  .ar2s-humanoid-grid {
+  .ar2s-humanoid-grid,
+  .ar2s-policy-grid {
     grid-template-columns: 1fr;
   }
 

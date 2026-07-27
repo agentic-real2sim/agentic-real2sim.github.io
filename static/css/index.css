@@ -325,14 +325,18 @@ body {
   background: #fff;
 }
 
-.content figure.ar2s-policy-pair {
+.ar2s-policy-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.content .ar2s-policy-pane {
   margin: 0;
   min-width: 0;
 }
 
-.ar2s-policy-labels {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.ar2s-policy-label {
   margin-bottom: 0.35rem;
   text-align: center;
   font-size: 0.8rem;
@@ -342,12 +346,24 @@ body {
 
 .ar2s-policy-media {
   display: block;
-  width: 100%;
+  width: 200%;
+  max-width: none;
   height: auto;
   aspect-ratio: 32 / 9;
-  object-fit: contain;
+  object-fit: fill;
+  border: 0;
+  border-radius: 0;
+}
+
+.ar2s-policy-media-window {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
   border: 1px solid #ddd;
   border-radius: 8px;
+}
+
+.ar2s-policy-pane--sim .ar2s-policy-media {
+  transform: translateX(-50%);
 }
 
 .ar2s-policy-activity {

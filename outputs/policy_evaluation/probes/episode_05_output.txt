@@ -1,0 +1,11 @@
+path=/home/eric/research/ar2s_website/outputs/policy_evaluation/generated/episode_05.gif
+codec_name=gif
+codec_type=video
+width=640
+height=180
+avg_frame_rate=6/1
+start_time=0.000000
+duration=23.340000
+nb_read_frames=140
+duration=23.340000
+size=5587496

@@ -325,18 +325,14 @@ body {
   background: #fff;
 }
 
-.ar2s-policy-pair {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.5rem;
-}
-
-.content .ar2s-policy-pair figure {
+.content figure.ar2s-policy-pair {
   margin: 0;
   min-width: 0;
 }
 
-.ar2s-policy-label {
+.ar2s-policy-labels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-bottom: 0.35rem;
   text-align: center;
   font-size: 0.8rem;
@@ -348,7 +344,7 @@ body {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 32 / 9;
   object-fit: contain;
   border: 1px solid #ddd;
   border-radius: 8px;

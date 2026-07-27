@@ -4,6 +4,7 @@ codec_type=video
 width=2560
 height=720
 avg_frame_rate=15/1
+start_time=0.000000
 duration=23.333333
 nb_read_frames=350
 duration=23.334000

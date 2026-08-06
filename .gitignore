@@ -1,2 +1,12 @@
 .DS_store
 .idea
+
+# Agentic coding files
+.claude/
+.agents/knowledge/
+.agents/plans/
+.agents/prompts/
+.agents/reports/
+.agents/logs/
+.github/*
+!.github/copilot-instructions.md
